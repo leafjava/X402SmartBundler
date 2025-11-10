@@ -18,11 +18,11 @@ export default function DocsPage() {
           <Link href="/" className="flex items-center space-x-3 hover:opacity-80 transition-opacity">
             <img 
               src="/support/cina-logo-white.svg" 
-              alt="CINA Logo" 
+              alt="PayMind Logo" 
               className="w-10 h-10 object-contain"
             />
             <div className="text-2xl font-bold bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
-              CINA
+              PayMind
             </div>
           </Link>
           <ConnectWallet />
@@ -31,7 +31,7 @@ export default function DocsPage() {
         {/* 文档标题 */}
         <div className="text-center mb-16">
           <h1 className="text-5xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-blue-400 via-cyan-400 to-purple-400 bg-clip-text text-transparent leading-tight">
-            CINA Protocol
+            PayMind Protocol
           </h1>
           <div className="text-2xl md:text-3xl font-semibold text-slate-300 mb-4">
             技术白皮书
@@ -44,7 +44,7 @@ export default function DocsPage() {
               2025年4月3日
             </span>
             <span className="px-4 py-2 bg-cyan-500/10 border border-cyan-500/30 rounded-xl">
-              CINA Labs
+              PayMind Labs
             </span>
           </div>
         </div>

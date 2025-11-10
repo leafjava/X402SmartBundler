@@ -54,11 +54,11 @@ export default function main() {
           <div className="flex items-center space-x-3">
             <img 
               src="/support/cina-logo-white.svg" 
-              alt="CINA Logo" 
+              alt="PayMind Logo" 
               className="w-10 h-10 object-contain"
             />
             <div className="text-2xl font-bold bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
-              CINA
+              PayMind
             </div>
           </div>
           <ConnectWallet />
@@ -67,7 +67,7 @@ export default function main() {
         {/* 主要内容区域 */}
         <div className="text-center mb-16">
           <h1 className="text-5xl md:text-7xl font-bold mb-6 bg-gradient-to-r from-indigo-400 via-white-500 to-pink-500 bg-clip-text text-transparent leading-tight drop-shadow-lg">
-            CINA 交易所
+            PayMind
           </h1>
           <p className="text-xl text-gray-200 mb-8 max-w-3xl mx-auto leading-relaxed">
             智能合约交易平台，支持杠杆交易、仓位管理，让您的 DeFi 投资更加高效

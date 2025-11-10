@@ -24,7 +24,7 @@ export default function Footer() {
               href="/docs" 
               className="text-lg hover:text-slate-300 transition-colors"
             >
-              文档
+              document
             </Link>
           </div>
 
