@@ -57,11 +57,12 @@ export default function main() {
         {/* 顶部导航 */}
         <div className="flex items-center justify-between mb-12">
           <div className="flex items-center space-x-3">
-            <img 
+            {/* <img 
               src="/support/cina-logo-white.svg" 
               alt="PayMind Logo" 
               className="w-10 h-10 object-contain"
-            />
+            /> */}
+            <div className="w-10 h-10 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg flex items-center justify-center text-white font-bold">PM</div>
             <div className="text-2xl font-bold bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
               PayMind
             </div>
