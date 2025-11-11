@@ -16,11 +16,28 @@ export function PopupAssistant({ isOpen, onClose }: PopupAssistantProps) {
   const [isLoading, setIsLoading] = useState(false)
   const [userId] = useState(() => `user_${Date.now()}_${Math.random().toString(36).slice(2, 11)}`)
   const assistantMessageIdRef = useRef<number | null>(null)
+  
+  // 开场白按钮选项
+  const quickActions = [
+    '支付引导',
+    '支付状态查询',
+    '分润信息展示',
+    '支付策略推荐'
+  ]
+  
+  // 判断是否显示开场白按钮（只有初始消息时显示）
+  const showQuickActions = messages.length === 1 && !isLoading
 
-  const handleSend = async () => {
-    if (!message.trim() || isLoading) return
+  const handleQuickAction = (actionText: string) => {
+    // 点击快速操作按钮时，直接发送对应的消息
+    handleSend(actionText)
+  }
+
+  const handleSend = async (customMessage?: string) => {
+    const messageToSend = customMessage || message.trim()
+    if (!messageToSend || isLoading) return
     
-    const userMessage = message.trim()
+    const userMessage = messageToSend
     setMessages(prev => [...prev, { id: Date.now(), text: userMessage, sender: 'user' }])
     setMessage('')
     setIsLoading(true)
@@ -123,6 +140,24 @@ export function PopupAssistant({ isOpen, onClose }: PopupAssistantProps) {
               </div>
             </div>
           ))}
+          
+          {/* 开场白按钮 */}
+          {showQuickActions && (
+            <div className="space-y-2">
+              <div className="grid grid-cols-2 gap-2">
+                {quickActions.map((action, index) => (
+                  <button
+                    key={index}
+                    onClick={() => handleQuickAction(action)}
+                    className="px-4 py-2.5 bg-white dark:bg-[#2e3b5e] border border-gray-300 dark:border-[#34495e] rounded-lg text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-[#34495e] transition-colors text-center"
+                  >
+                    {action}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+          
           {isLoading && messages[messages.length - 1]?.sender === 'assistant' && !messages[messages.length - 1]?.text && (
             <div className="flex justify-start">
               <div className="bg-gray-100 dark:bg-[#2e3b5e] text-gray-900 dark:text-gray-100 rounded-lg px-4 py-2">
