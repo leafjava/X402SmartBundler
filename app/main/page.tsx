@@ -1,5 +1,5 @@
 'use client';
-import { useEffect } from 'react';
+import { useEffect,useState } from 'react';
 import Link from 'next/link';
 import ConnectWallet from '../../components/ConnectWallet';
 import Poster from '../../components/ui/poster/poster';
@@ -12,14 +12,27 @@ import {
   Key, ShoppingCart, AlertCircle, Shield, Lock, Zap, RotateCcw, MessageCircle, MessageSquare, Send,
   User as UserIcon, Bot as BotIcon, Sparkles, Crown, Gift, TrendingUp, ArrowRight, Eye, EyeOff, Download as DownloadIcon
 } from 'lucide-react';
+import { PopupAssistant } from '@/components/popup-assistant'
+import { FloatingButton } from '@/components/floating-button'
 
 // 禁用静态优化，因为此页面包含动态内容和 3D 场景
 export const dynamic = 'force-dynamic';
 
 export default function main() {
+  const [isPopupOpen, setIsPopupOpen] = useState(false);
+
+  const openWindow = () => {
+    setIsPopupOpen(true)
+  }
+
+  const closePopup = () => {
+    setIsPopupOpen(false)
+  }
+
   // 检查是否从交易页面回退
   useEffect(() => {
     const leftTrading = sessionStorage.getItem('tradingPageLeft');
+
     if (leftTrading === 'true') {
       console.log('Detected back from trading page, refreshing...');
       sessionStorage.removeItem('tradingPageLeft');
@@ -265,6 +278,8 @@ export default function main() {
         <LogoMarquee />
       </div>
       
+      <FloatingButton onClick={openWindow} />
+      <PopupAssistant isOpen={isPopupOpen} onClose={closePopup} />
     </div>
   );
 }
