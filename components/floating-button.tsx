@@ -217,6 +217,7 @@ export function FloatingButton({
         cursor: dragging ? 'grabbing' : 'grab',
       }}
       onPointerDown={(e) => {
+        e.preventDefault()
         e.stopPropagation()
         onPointerDown(e)
       }}
@@ -225,20 +226,24 @@ export function FloatingButton({
         onPointerMove(e)
       }}
       onPointerUp={(e) => {
+        e.preventDefault()
         e.stopPropagation()
         onPointerUp(e)
       }}
       onPointerCancel={(e) => {
+        e.preventDefault()
         e.stopPropagation()
         onPointerUp(e)
       }}
       onPointerLeave={(e) => {
+        e.preventDefault()
         e.stopPropagation()
         onPointerUp(e)
       }}
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
       onClick={(e) => {
+        e.preventDefault()
         e.stopPropagation()
         handleClick(e)
       }}

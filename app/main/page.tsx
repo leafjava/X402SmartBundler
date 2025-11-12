@@ -136,7 +136,7 @@ export default function main() {
         {/* 主要功能区域 - 左右布局 */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-20" style={{display:"flex",justifyContent:"space-around"}}>
           {/* 合约交易卡片 - 左侧 */}
-          <Link href="/trading" className="group">
+          <Link href="/merchant" className="group">
             <div  className="bg-gradient-to-br from-slate-800/40 to-slate-900/60 backdrop-blur-md border border-slate-700/50 rounded-3xl p-8 hover:from-slate-700/50 hover:to-slate-800/70 hover:border-slate-600/60 transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:shadow-slate-500/20 relative overflow-hidden h-full">
               {/* 微妙的发光效果 */}
               <div className="absolute inset-0 bg-gradient-to-br from-amber-500/5 to-orange-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
