@@ -1,23 +1,28 @@
-import {
-  Store, Bot, User, ChevronLeft, ChevronRight, CreditCard, Wallet, CheckCircle, Clock, XCircle, Copy, Download,
-  Key, ShoppingCart, AlertCircle, Shield, Lock, Zap, RotateCcw, MessageCircle, MessageSquare, Send,
-  User as UserIcon, Bot as BotIcon, Sparkles, Crown, Gift, TrendingUp, ArrowRight, Eye, EyeOff, Download as DownloadIcon
-} from 'lucide-react';
+import { ChevronLeft, ChevronRight, RotateCcw } from 'lucide-react';
+import React from 'react';
 
-const StepNavigator = ({ step, total, onNext, onPrev, onRestart }) => (
+interface StepNavigatorProps {
+  step: number;
+  total: number;
+  onNext: () => void;
+  onPrev: () => void;
+  onRestart?: () => void;
+}
+
+export const StepNavigator = ({ step, total, onNext, onPrev, onRestart }: StepNavigatorProps) => (
   <div className="flex items-center justify-between mt-6">
     <div className="flex space-x-3">
       <button
         onClick={onPrev}
         disabled={step <= 0}
-        className="flex items-center px-4 py-2 border border-gray-300 rounded-lg text-sm disabled:opacity-50 hover:bg-gray-50"
+        className="flex items-center px-4 py-2 border border-gray-300 rounded-lg text-sm disabled:opacity-50 hover:bg-gray-50 text-black"
       >
         <ChevronLeft className="w-4 h-4 mr-2" /> 上一步
       </button>
       {onRestart && (
         <button
           onClick={onRestart}
-          className="flex items-center px-4 py-2 border border-gray-300 rounded-lg text-sm hover:bg-gray-50"
+          className="flex items-center px-4 py-2 border border-gray-300 rounded-lg text-sm hover:bg-gray-50 text-black"
         >
           <RotateCcw className="w-4 h-4 mr-2" /> 重新开始
         </button>
