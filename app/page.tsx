@@ -29,7 +29,7 @@ export default function HomePage() {
       {/* 10月20日上午添加的酷炫特效 */}
       <Link href="/main" className="block w-full h-screen">
         <Spline
-          scene="/scene2.splinecode" 
+          scene="/scene3.splinecode" 
         />
       </Link>
 
