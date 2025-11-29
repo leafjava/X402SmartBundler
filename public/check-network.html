@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>检查网络和合约</title>
+  <style>
+    body { font-family: monospace; padding: 20px; background: #1a1a1a; color: #fff; }
+    button { padding: 10px 20px; margin: 10px 0; cursor: pointer; background: #4CAF50; color: white; border: none; border-radius: 5px; font-size: 16px; }
+    button:hover { background: #45a049; }
+    .result { background: #2a2a2a; padding: 15px; margin: 10px 0; border-radius: 5px; min-height: 50px; }
+    .error { color: #ff5555; }
+    .success { color: #50fa7b; }
+    .warning { color: #ffb86c; }
+  </style>
+</head>
+<body>
+  <h1>🔍 网络和合约检查工具</h1>
+  
+  <button onclick="checkNetwork()">1. 检查当前网络</button>
+  <div id="network-result" class="result">点击按钮开始检查...</div>
+  
+  <button onclick="checkContract()">2. 检查合约状态</button>
+  <div id="contract-result" class="result">点击按钮开始检查...</div>
+  
+  <button onclick="testPayment()">3. 测试支付调用</button>
+  <div id="payment-result" class="result">点击按钮开始检查...</div>
+
+  <script>
+    const CONTRACT_ADDRESS = '0x45E1E7796e11156d12621687d0Fa052f52A4Db51';
+    
+    async function checkNetwork() {
+      const result = document.getElementById('network-result');
+      result.innerHTML = '检查中...';
+      
+      try {
+        if (!window.ethereum) {
+          result.innerHTML = '<span class="error">❌ 未检测到钱包 (MetaMask/OKX)</span>';
+          return;
+        }
+        
+        // 检测钱包类型
+        const walletType = window.ethereum.isMetaMask ? 'MetaMask' : 
+                          window.okxwallet ? 'OKX Wallet' : '未知钱包';
+        console.log('检测到钱包:', walletType);
+        
+        const chainId = await window.ethereum.request({ method: 'eth_chainId' });
+        const chainIdDec = parseInt(chainId, 16);
+        
+        const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+        const account = accounts[0];
+        
+        const balance = await window.ethereum.request({
+          method: 'eth_getBalance',
+          params: [account, 'latest']
+        });
+        const balanceEth = parseInt(balance, 16) / 1e18;
+        
+        const networks = {
+          1: 'Ethereum Mainnet',
+          11155111: 'Sepolia Testnet',
+          8453: 'Base Mainnet',
+          84532: 'Base Sepolia',
+          1337: 'Localhost'
+        };
+        
+        const networkName = networks[chainIdDec] || '未知网络';
+        const isCorrect = chainIdDec === 11155111;
+        
+        let html = '<div class="' + (isCorrect ? 'success' : 'error') + '">';
+        html += '<strong>当前网络:</strong> ' + networkName + ' (Chain ID: ' + chainIdDec + ')';
+        html += isCorrect ? ' ✅ 正确' : ' ❌ 错误！应该连接到 Sepolia (11155111)';
+        html += '</div>';
+        html += '<div><strong>账户:</strong> ' + account + '</div>';
+        html += '<div><strong>余额:</strong> ' + balanceEth.toFixed(4) + ' ETH</div>';
+        
+        result.innerHTML = html;
+      } catch (error) {
+        result.innerHTML = '<span class="error">❌ 错误: ' + error.message + '</span>';
+      }
+    }
+    
+    async function checkContract() {
+      const result = document.getElementById('contract-result');
+      result.innerHTML = '检查中...';
+      
+      try {
+        const code = await window.ethereum.request({
+          method: 'eth_getCode',
+          params: [CONTRACT_ADDRESS, 'latest']
+        });
+        
+        const exists = code !== '0x';
+        
+        if (!exists) {
+          let html = '<span class="error">❌ 合约不存在！</span>';
+          html += '<div>地址: ' + CONTRACT_ADDRESS + '</div>';
+          html += '<div class="warning">⚠️ 请确认:</div>';
+          html += '<div>1. 合约是否已部署到当前网络</div>';
+          html += '<div>2. 合约地址是否正确</div>';
+          result.innerHTML = html;
+          return;
+        }
+        
+        const minUsdData = await window.ethereum.request({
+          method: 'eth_call',
+          params: [{
+            to: CONTRACT_ADDRESS,
+            data: '0x6bb3da7a'
+          }, 'latest']
+        });
+        
+        const minUsd = parseInt(minUsdData, 16);
+        
+        let html = '<div class="success">✅ 合约存在</div>';
+        html += '<div><strong>地址:</strong> ' + CONTRACT_ADDRESS + '</div>';
+        html += '<div><strong>代码长度:</strong> ' + code.length + ' bytes</div>';
+        html += '<div><strong>MIN_USD:</strong> ' + minUsd + ' wei = ' + (minUsd / 1e18) + ' (18 decimals)</div>';
+        
+        result.innerHTML = html;
+      } catch (error) {
+        result.innerHTML = '<span class="error">❌ 错误: ' + error.message + '</span>';
+      }
+    }
+    
+    async function testPayment() {
+      const result = document.getElementById('payment-result');
+      result.innerHTML = '测试中...';
+      
+      try {
+        const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+        const account = accounts[0];
+        
+        const amounts = [
+          { name: '0.0001 ETH', hex: '0x5AF3107A4000' },
+          { name: '0.001 ETH', hex: '0x38D7EA4C68000' },
+          { name: '0.01 ETH', hex: '0x2386F26FC10000' },
+        ];
+        
+        let html = '<div><strong>Gas 估算测试:</strong></div>';
+        
+        for (const amount of amounts) {
+          try {
+            const gas = await window.ethereum.request({
+              method: 'eth_estimateGas',
+              params: [{
+                from: account,
+                to: CONTRACT_ADDRESS,
+                data: '0xb4cb0352',
+                value: amount.hex
+              }]
+            });
+            
+            html += '<div class="success">✅ ' + amount.name + ' - Gas: ' + parseInt(gas, 16) + '</div>';
+          } catch (error) {
+            const errorMsg = error.message.split('\n')[0];
+            html += '<div class="error">❌ ' + amount.name + ' - ' + errorMsg + '</div>';
+          }
+        }
+        
+        result.innerHTML = html;
+      } catch (error) {
+        result.innerHTML = '<span class="error">❌ 错误: ' + error.message + '</span>';
+      }
+    }
+  </script>
+</body>
+</html>
