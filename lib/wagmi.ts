@@ -1,7 +1,7 @@
 'use client';
 import { http, createConfig } from 'wagmi';
 import { sepolia, mainnet, type Chain } from 'viem/chains';
-import { injected, metaMask, walletConnect } from 'wagmi/connectors';
+import { injected, walletConnect } from 'wagmi/connectors';
 import { defineChain } from 'viem';
 
 // 本地开发链配置
@@ -51,26 +51,35 @@ const chains: readonly [Chain, ...Chain[]] = isLocalDev
   ? [localhost, sepolia, mainnet] 
   : [sepolia, mainnet];
 
-// 构建连接器数组 - 只在客户端添加 WalletConnect
+// 构建连接器数组 - 只使用最基础的 injected 连接器
 const getConnectors = () => {
+  // 只使用 injected 连接器，避免 MetaMask SDK 的兼容性问题
   const baseConnectors = [
-    injected(),
-    metaMask(),
+    injected({ 
+      shimDisconnect: true,
+      target: 'metaMask' // 优先使用 MetaMask
+    }),
   ];
   
   // 只在客户端环境且有有效的 projectId 时添加 WalletConnect
   if (typeof window !== 'undefined' && walletConnectProjectId && walletConnectProjectId !== 'your_walletconnect_project_id_here') {
-    baseConnectors.push(
-      // @ts-ignore - WalletConnect 连接器类型暂时不兼容 wagmi v2，但运行时正常
-      walletConnect({
-        projectId: walletConnectProjectId,
-        showQrModal: true,
-      })
-    );
+    try {
+      baseConnectors.push(
+        // @ts-ignore - WalletConnect 连接器类型暂时不兼容 wagmi v2，但运行时正常
+        walletConnect({
+          projectId: walletConnectProjectId,
+          showQrModal: true,
+        })
+      );
+      console.log('✅ WalletConnect 连接器已启用');
+    } catch (error) {
+      console.warn('⚠️ WalletConnect 连接器初始化失败:', error);
+    }
   } else if (typeof window !== 'undefined') {
-    console.warn('WalletConnect连接器未启用，请配置有效的项目ID');
+    console.warn('⚠️ WalletConnect连接器未启用，请配置有效的项目ID');
   }
   
+  console.log('📱 已配置的连接器数量:', baseConnectors.length);
   return baseConnectors;
 };
 

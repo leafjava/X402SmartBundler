@@ -2,29 +2,62 @@
 import Button from './ui/Button';
 import { useAccount, useConnect, useDisconnect } from 'wagmi';
 import { injected } from 'wagmi/connectors';
-import { useState } from 'react';
+import { useEffect } from 'react';
 
 export default function ConnectWallet() {
   const { address, isConnected } = useAccount();
   const { connect, connectors, status, error } = useConnect();
   const { disconnect } = useDisconnect();
-  const [isConnecting, setIsConnecting] = useState(false);
+
+  // 调试信息
+  console.log('🔍 ConnectWallet 组件状态:', {
+    isConnected,
+    connectorsCount: connectors?.length || 0,
+    connectors: connectors?.map(c => ({ id: c.id, type: c.type, name: c.name })),
+    status,
+    hasError: !!error
+  });
+
+  // 监听连接状态变化
+  useEffect(() => {
+    if (status === 'success') {
+      console.log('✅ 连接成功！');
+    } else if (status === 'error') {
+      console.log('❌ 连接失败:', error);
+    }
+  }, [status, error]);
 
   const handleConnect = async () => {
+    console.log('🔗 开始钱包连接');
+    console.log('📋 可用的连接器:', connectors);
+    
+    // 检查是否有 window.ethereum
+    if (typeof window !== 'undefined' && !window.ethereum) {
+      console.error('❌ 未检测到 Web3 钱包');
+      alert('未检测到 MetaMask 或其他 Web3 钱包\n\n请先安装 MetaMask 浏览器扩展：\nhttps://metamask.io/download/');
+      return;
+    }
+    
+    // 尝试多种方式查找 injected connector
+    const injectedConnector = connectors.find(
+      connector => connector.type === 'injected' || connector.id === 'injected'
+    );
+    
     try {
-      console.log('15钱包连接')
-      setIsConnecting(true);
-      const injectedConnector = connectors.find(connector => connector.type === 'injected');
       if (injectedConnector) {
-        console.log('19injectedConnector',injectedConnector)
+        console.log('✓ 找到 injected connector:', injectedConnector);
         await connect({ connector: injectedConnector });
+      } else if (connectors.length > 0) {
+        // 如果找不到 injected，使用第一个可用的连接器
+        console.log('✓ 使用第一个可用连接器:', connectors[0]);
+        await connect({ connector: connectors[0] });
       } else {
-        console.error('No injected connector found');
+        console.error('❌ 没有找到任何连接器');
+        alert('没有找到可用的钱包连接器');
       }
-    } catch (err) {
-      console.error('Connection failed:', err);
-    } finally {
-      setIsConnecting(false);
+    } catch (err: any) {
+      console.error('❌ 连接过程出错:', err);
+      // 不显示技术错误给用户，因为 wagmi 会处理
     }
   };
 
@@ -32,15 +65,17 @@ export default function ConnectWallet() {
     console.error('Connection error:', error);
   }
 
+  const isLoading = status === 'pending';
+
   if (!isConnected) {
     return (
       <div className="flex flex-col items-end gap-2">
         <button 
           onClick={handleConnect} 
-          disabled={isConnecting || status === 'pending'}
+          disabled={isLoading}
           className="inline-flex items-center z-10 justify-center whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 disabled:bg-accent disabled:text-muted-foreground bg-blue-500/20 hover:bg-blue-500/15 text-blue-400 rounded-xl h-10 px-4 py-2"
         >
-          {isConnecting || status === 'pending' ? (
+          {isLoading ? (
             <>
               <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin mr-2"></div>
               连接中…
