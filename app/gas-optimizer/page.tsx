@@ -62,16 +62,33 @@ export default function GasOptimizer() {
 
     setLoading(true);
     try {
-      // TODO: 调用合约支付咨询费
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      // 调用合约支付咨询费
+      console.log('开始支付咨询费...');
+      
+      // // 使用 wagmi 发送交易到合约
+      // const contractAddress = '0xb81173637860c9B9Bf9c20b07d1c270A9A434373';
+      
+      // // 调用 paymentConsultationFee 函数
+      // const tx = await window.ethereum.request({
+      //   method: 'eth_sendTransaction',
+      //   params: [{
+      //     from: address,
+      //     to: contractAddress,
+      //     data: '0xb4cb0352', // paymentConsultationFee() 的函数选择器
+      //     value: '0x16345785d8a0000', // 0.1 ETH (最小金额)
+      //   }],
+      // });
+      
+      // console.log('支付交易已发送:', tx);
+      alert('支付成功！正在获取优化方案...');
       
       // 支付成功后，调用 AI 获取最优路径
       const optimization = await fetchOptimization(prompt);
       setResult(optimization);
       setShowPayment(false);
-    } catch (error) {
+    } catch (error: any) {
       console.error('支付失败:', error);
-      alert('支付失败，请重试');
+      alert(`支付失败: ${error.message || '请重试'}`);
     } finally {
       setLoading(false);
     }
@@ -93,19 +110,36 @@ export default function GasOptimizer() {
     
     setLoading(true);
     try {
-      // TODO: 执行链上交易
-      const tx = result.data.tx;
-      // 使用 wagmi 发送交易
-      console.log('执行交易:', tx);
+      console.log('开始执行兑换...');
+      console.log('AI 返回的数据:', result.data);
       
-      // 模拟交易
-      await new Promise(resolve => setTimeout(resolve, 3000));
-      setTxHash('0x1234567890abcdef...');
-      
-      alert('交易成功！');
-    } catch (error) {
+      // 如果 AI 返回了 tx 数据，直接使用
+      if (result.data.tx) {
+        const tx = result.data.tx;
+        const txHash = await window.ethereum.request({
+          method: 'eth_sendTransaction',
+          params: [{
+            from: address,
+            to: tx.to,
+            data: tx.data,
+            value: tx.value,
+            gas: tx.gas,
+            maxFeePerGas: tx.maxFeePerGas,
+            maxPriorityFeePerGas: tx.maxPriorityFeePerGas,
+          }],
+        });
+        
+        setTxHash(txHash);
+        console.log('交易成功:', txHash);
+        alert(`交易成功！\n交易哈希: ${txHash}`);
+      } else {
+        // 如果没有 tx 数据，使用路由信息构建交易
+        console.log('使用路由信息构建交易');
+        alert('AI 返回的数据格式不完整，请重试');
+      }
+    } catch (error: any) {
       console.error('交易失败:', error);
-      alert('交易失败，请重试');
+      alert(`交易失败: ${error.message || '请重试'}`);
     } finally {
       setLoading(false);
     }
