@@ -12,7 +12,10 @@
     "hardhat:node": "hardhat node",
     "hardhat:compile": "hardhat compile",
     "hardhat:deploy": "hardhat run scripts/deploy.js --network localhost",
-    "hardhat:test": "hardhat test"
+    "hardhat:test": "hardhat test",
+    "gas-optimizer:deploy": "hardhat run scripts/deploy-gas-optimizer.js --network sepolia",
+    "gas-optimizer:deploy:local": "hardhat run scripts/deploy-gas-optimizer.js --network localhost",
+    "gas-optimizer:dev": "npm run hardhat:compile && npm run dev"
   },
   "dependencies": {
     "@nomicfoundation/hardhat-toolbox": "^4.0.0",

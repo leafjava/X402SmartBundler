@@ -133,6 +133,29 @@ export default function main() {
           </p>
         </div>
 
+        {/* Gas 优化器横幅 */}
+        <div className="mb-12">
+          <Link href="/gas-optimizer" className="group block">
+            <div className="bg-gradient-to-r from-blue-600/20 via-purple-600/20 to-pink-600/20 backdrop-blur-md border border-blue-500/30 rounded-3xl p-8 hover:from-blue-600/30 hover:via-purple-600/30 hover:to-pink-600/30 transition-all duration-300 hover:scale-[1.02] hover:shadow-2xl hover:shadow-blue-500/20">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-6">
+                  <div className="w-20 h-20 bg-gradient-to-r from-blue-500 to-purple-500 rounded-2xl flex items-center justify-center shadow-lg shadow-blue-500/30">
+                    <Zap size={40} className="text-white" />
+                  </div>
+                  <div>
+                    <h2 className="text-3xl font-bold text-white mb-2">Gas 费优化器 🚀</h2>
+                    <p className="text-blue-300 text-lg">AI 驱动的智能交易路径计算 - 支付 0.5 USDC 获取最优方案</p>
+                  </div>
+                </div>
+                <div className="flex items-center text-blue-400 group-hover:text-blue-300 transition-colors">
+                  <span className="text-lg font-medium mr-2">立即体验</span>
+                  <ArrowRight size={24} className="transform group-hover:translate-x-2 transition-transform" />
+                </div>
+              </div>
+            </div>
+          </Link>
+        </div>
+
         {/* 主要功能区域 - 左右布局 */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-20" style={{display:"flex",justifyContent:"space-around"}}>
           {/* 合约交易卡片 - 左侧 */}
