@@ -27,13 +27,8 @@ const localhost = defineChain({
   },
 });
 
-const isLocalDev = (
-  process.env.NODE_ENV === 'development' && (
-    process.env.NEXT_PUBLIC_USE_LOCAL === 'true' || 
-    (typeof window !== 'undefined' && window.location.hostname === 'localhost') ||
-    (typeof window !== 'undefined' && window.location.hostname === '127.0.0.1')
-  )
-) || (typeof window !== 'undefined' && window.location.hostname === 'localhost');
+// 只有明确设置了 NEXT_PUBLIC_USE_LOCAL=true 才使用本地节点
+const isLocalDev = process.env.NEXT_PUBLIC_USE_LOCAL === 'true';
 
 const chainId = isLocalDev ? 1337 : Number(process.env.NEXT_PUBLIC_CHAIN_ID || 11155111);
 const rpcUrl = isLocalDev ? 'http://127.0.0.1:8545' : (process.env.NEXT_PUBLIC_RPC_URL || 'https://rpc.sepolia.org');
@@ -89,9 +84,16 @@ export const wagmiConfig = createConfig({
   chains,
   connectors,
   transports: {
-    [localhost.id]: http(rpcUrl),
-    [sepolia.id]: http(rpcUrl),
+    [localhost.id]: http('http://127.0.0.1:8545'),
+    [sepolia.id]: http('https://rpc.sepolia.org'),
     [mainnet.id]: http(),
   },
   ssr: true,
 });
+
+// 调试信息
+console.log('🔧 Wagmi 配置:');
+console.log('  - 使用本地节点:', isLocalDev);
+console.log('  - Chain ID:', chainId);
+console.log('  - RPC URL:', rpcUrl);
+console.log('  - 可用链:', chains.map(c => `${c.name} (${c.id})`).join(', '));

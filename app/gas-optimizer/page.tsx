@@ -39,8 +39,8 @@ export default function GasOptimizer() {
   const [result, setResult] = useState<OptimizationResult | null>(null);
   const [txHash, setTxHash] = useState('');
   
-  const CONSULTATION_FEE = '0.5'; // USDC
-  const CONTRACT_ADDRESS = '0xb81173637860c9B9Bf9c20b07d1c270A9A434373' as `0x${string}`;
+  const CONSULTATION_FEE = '0.1'; // USD
+  const CONTRACT_ADDRESS = '0x45E1E7796e11156d12621687d0Fa052f52A4Db51' as `0x${string}`;
   
   // FundMe 合约 ABI (只需要我们用到的函数)
   const FUNDME_ABI = [
@@ -107,11 +107,14 @@ export default function GasOptimizer() {
       console.log('📤 使用 wagmi 发送交易...');
       
       // 使用 wagmi 的 writeContract 发送交易
+      // MIN_USD = 1e17 = 0.1 USD
+      // 假设 ETH = $3000, 需要 0.1/3000 = 0.0000333 ETH
+      // 为了保险，发送 0.001 ETH (约 $3)
       writeContract({
         address: CONTRACT_ADDRESS,
         abi: FUNDME_ABI,
         functionName: 'paymentConsultationFee',
-        value: parseEther('0.1'), // 0.1 ETH
+        value: BigInt('1000000000000000'), // 0.001 ETH in Wei
       });
       
       console.log('✅ 交易请求已发送到钱包,请在钱包中确认');
@@ -267,7 +270,7 @@ export default function GasOptimizer() {
                 </div>
                 <div className="text-right">
                   <div className="text-3xl font-bold text-blue-400">{CONSULTATION_FEE}</div>
-                  <div className="text-gray-400 text-sm">USDC</div>
+                  <div className="text-gray-400 text-sm">USD (约 0.001 ETH)</div>
                 </div>
               </div>
               
