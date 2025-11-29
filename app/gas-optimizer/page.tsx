@@ -41,14 +41,32 @@ export default function GasOptimizer() {
       return;
     }
     
+    if (!isConnected) {
+      alert('请先连接钱包');
+      return;
+    }
+    
     setLoading(true);
     try {
-      // 模拟 AI 分析
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      console.log('🔍 开始调用 AI 分析需求...');
+      
+      // 调用 AI 获取优化方案
+      const optimization = await fetchOptimization(prompt);
+      console.log('✅ AI 返回优化方案:', optimization);
+      
+      if (!optimization.ok || !optimization.data) {
+        throw new Error(optimization.error || 'AI 分析失败');
+      }
+      
+      // 保存 AI 返回的结果
+      setResult(optimization);
+      
+      // 显示支付界面
       setShowPayment(true);
-    } catch (error) {
-      console.error('分析失败:', error);
-      alert('分析失败，请重试');
+      console.log('💡 AI 分析完成，请支付咨询费');
+    } catch (error: any) {
+      console.error('❌ 分析失败:', error);
+      alert(`分析失败: ${error.message || '请重试'}`);
     } finally {
       setLoading(false);
     }
@@ -60,34 +78,37 @@ export default function GasOptimizer() {
       return;
     }
 
+    if (!result) {
+      alert('请先进行分析');
+      return;
+    }
+
     setLoading(true);
     try {
-      // 调用合约支付咨询费
-      console.log('开始支付咨询费...');
+      console.log('💰 开始支付咨询费...');
+      console.log('📊 AI 优化方案:', result);
       
-      // // 使用 wagmi 发送交易到合约
-      // const contractAddress = '0xb81173637860c9B9Bf9c20b07d1c270A9A434373';
+      // 合约地址
+      const contractAddress = '0xb81173637860c9B9Bf9c20b07d1c270A9A434373';
       
-      // // 调用 paymentConsultationFee 函数
-      // const tx = await window.ethereum.request({
-      //   method: 'eth_sendTransaction',
-      //   params: [{
-      //     from: address,
-      //     to: contractAddress,
-      //     data: '0xb4cb0352', // paymentConsultationFee() 的函数选择器
-      //     value: '0x16345785d8a0000', // 0.1 ETH (最小金额)
-      //   }],
-      // });
+      // 调用 paymentConsultationFee 函数
+      const paymentTx = await window.ethereum.request({
+        method: 'eth_sendTransaction',
+        params: [{
+          from: address,
+          to: contractAddress,
+          data: '0xb4cb0352', // paymentConsultationFee() 的函数选择器
+          value: '0x16345785d8a0000', // 0.1 ETH (最小金额)
+        }],
+      });
       
-      // console.log('支付交易已发送:', tx);
-      alert('支付成功！正在获取优化方案...');
+      console.log('✅ 支付交易已发送:', paymentTx);
       
-      // 支付成功后，调用 AI 获取最优路径
-      const optimization = await fetchOptimization(prompt);
-      setResult(optimization);
+      // 支付成功，隐藏支付界面
       setShowPayment(false);
+      alert('支付成功！现在可以执行兑换了。');
     } catch (error: any) {
-      console.error('支付失败:', error);
+      console.error('❌ 支付失败:', error);
       alert(`支付失败: ${error.message || '请重试'}`);
     } finally {
       setLoading(false);
