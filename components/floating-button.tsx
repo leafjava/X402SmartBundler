@@ -256,8 +256,7 @@ export function FloatingButton({
         style={{ 
           objectFit: 'contain',
           WebkitUserDrag: 'none'
-
-        }}
+        } as React.CSSProperties}
       />
     </div>
   )
